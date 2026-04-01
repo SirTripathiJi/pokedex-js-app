@@ -6,65 +6,58 @@ document.addEventListener("DOMContentLoaded", () => {
   const id = parseInt(pokemonID, 10);
 
   if (id < 1 || id > MAX_POKEMONS) {
-    return (window.location.href = "./index.html");
+    window.location.href = "./index.html";
+    return;
   }
 
   currentPokemonId = id;
   loadPokemon(id);
+  setupNavigation();
 });
 
 async function loadPokemon(id) {
+  currentPokemonId = id;
   try {
     const [pokemon, pokemonSpecies] = await Promise.all([
-      fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) =>
-        res.json()
-      ),
-      fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then((res) =>
-        res.json()
-      ),
+      fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) => res.json()),
+      fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then((res) => res.json())
     ]);
 
-    const abilitiesWrapper = document.querySelector(
-      ".pokemon-detail-wrap .pokemon-detail.move"
-    );
-    abilitiesWrapper.innerHTML = "";
+    if (currentPokemonId !== id) return;
 
-    if (currentPokemonId === id) {
-      displayPokemonDetails(pokemon);
-      const flavorText = getEnglishFlavorText(pokemonSpecies);
-      document.querySelector(".body3-fonts.pokemon-description").textContent =
-        flavorText;
-
-      const [leftArrow, rightArrow] = ["#leftArrow", "#rightArrow"].map((sel) =>
-        document.querySelector(sel)
-      );
-      leftArrow.removeEventListener("click", navigatePokemon);
-      rightArrow.removeEventListener("click", navigatePokemon);
-
-      if (id !== 1) {
-        leftArrow.addEventListener("click", () => {
-          navigatePokemon(id - 1);
-        });
-      }
-      if (id !== 151) {
-        rightArrow.addEventListener("click", () => {
-          navigatePokemon(id + 1);
-        });
-      }
-
-      window.history.pushState({}, "", `./detail.html?id=${id}`);
+    displayPokemonDetails(pokemon);
+    const desc = document.querySelector(".pokemon-description");
+    if (desc) {
+      desc.textContent = getEnglishFlavorText(pokemonSpecies) || "No description available.";
     }
 
-    return true;
+    window.history.pushState({}, "", `./detail.html?id=${id}`);
   } catch (error) {
-    console.error("An error occured while fetching Pokemon data:", error);
-    return false;
+    console.error("Error loading Pokemon:", error);
   }
 }
 
-async function navigatePokemon(id) {
-  currentPokemonId = id;
-  await loadPokemon(id);
+function setupNavigation() {
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const backBtn = document.getElementById("back-btn");
+
+  // Back button
+  if (backBtn) {
+    backBtn.onclick = () => window.location.href = "./index.html";
+  }
+
+  // Arrow navigation
+  if (prevBtn) {
+    prevBtn.onclick = () => {
+      if (currentPokemonId > 1) loadPokemon(currentPokemonId - 1);
+    };
+  }
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      if (currentPokemonId < 151) loadPokemon(currentPokemonId + 1);
+    };
+  }
 }
 
 const typeColors = {
