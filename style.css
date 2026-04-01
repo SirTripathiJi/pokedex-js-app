@@ -530,3 +530,36 @@ div#not-found-message {
   border-color: transparent;
   background-color: transparent;
 }
+
+/* Fix: High contrast stats on colored backgrounds */
+.detail-content .stat-name,
+.detail-content .stat-value {
+  color: white !important;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.detail-content .stat-bar {
+  background: rgba(0,0,0,0.3) !important;
+}
+
+.detail-content .stat-bar::-webkit-progress-value {
+  background: white !important;
+}
+
+/* Fix: Ensure navigation buttons are clickable */
+#prev-btn, #next-btn, #back-btn {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Fix: Typography clarity */
+.pokemon-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* All buttons - hover effect */
+button:hover {
+  transform: scale(1.05);
+}
