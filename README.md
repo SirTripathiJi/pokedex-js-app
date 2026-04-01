@@ -5,14 +5,12 @@ A simple, interactive Pokédex built with vanilla JavaScript that fetches real P
 ## 📋 Project Overview
 
 This web application allows users to:
-- Browse the first 151 Pokémon (Generation 1)
+- Browse the first 151 Pokémon 
 - View detailed information about each Pokémon
 - Search and filter Pokémon by name or number
 - Sort results by name or number
 - Mark favorites that persist in browser storage
 - Toggle between light and dark themes
-
-**Final Submission Deadline:** 10th April 2025
 
 ## 🎯 Features Implemented
 
@@ -163,52 +161,6 @@ p.stats.map(s => `
 - Minimal DOM manipulation with efficient rendering
 - No external dependencies (zero bloat)
 
-## 📊 Milestone Completion
-
-### ✅ Milestone 1: Project Setup (23rd March)
-- Chosen project: Pokédex web application
-- Selected API: PokéAPI (free, no authentication, extensive data)
-- Repository created and initialized
-- Initial README and project structure established
-
-### ✅ Milestone 2: API Integration (1st April)
-- Implemented `fetch()` to retrieve Pokémon data from PokéAPI
-- Dynamically display 151 Pokémon with images, names, and numbers
-- Loading spinner shown during API calls
-- Error handling for network failures
-- Fully responsive across devices (mobile, tablet, desktop)
-
-### ✅ Milestone 3: Core Features (8th April)
-- **Search:** Filter Pokémon by name or number (array `.filter()`)
-- **Sorting:** Sort by name (alphabetical) or number (numerical) (array `.sort()`)
-- **Favorites:** Add/remove favorite Pokémon with persistent storage
-- **Dark Mode:** Toggle theme with localStorage persistence
-- All HOFs implemented - NO `for` or `while` loops used
-
-### ✅ Milestone 4: Documentation & Deployment (10th April)
-- Comprehensive README with setup, usage, and code explanations
-- Code refactored for clarity and maintainability
-- Clean, commented, beginner-friendly code structure
-- Ready for deployment
-
-## 🌐 Deployment
-
-### Option 1: GitHub Pages (Recommended - Free)
-1. Push this repository to GitHub
-2. Go to repository Settings → Pages
-3. Select "main" branch as source
-4. Your app will be live at: `https://yourusername.github.io/pokedex-tutorial-main/`
-
-### Option 2: Netlify (Free)
-1. Drag and drop the project folder to [Netlify Drop](https://app.netlify.com/drop)
-2. Instant deployment with custom URL
-
-### Option 3: Vercel (Free)
-```bash
-npm i -g vercel
-vercel --prod
-```
-
 ## 🐛 Known Limitations
 
 - Only displays first 151 Pokémon (Generation 1) - can be expanded by changing `MAX` constant
@@ -269,11 +221,6 @@ This project demonstrates understanding of:
 ## 🙏 Credits
 
 - **PokéAPI** - Pokémon data (https://pokeapi.co)
-- **Sprite Images** - PokeAPI GitHub repository (Dream World sprites)
 - **Pokémon** - © Nintendo/Creatures Inc./GAME FREAK inc.
 
-## 📄 License
 
-This project is created for educational purposes as part of a web development course assignment.
-
----
