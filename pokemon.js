@@ -63,21 +63,17 @@ function displayPokemons(pokemon) {
 searchInput.addEventListener("keyup", handleSearch);
 
 function handleSearch() {
-  const searchTerm = searchInput.value.toLowerCase();
-  let filteredPokemons;
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  const sortMode = document.querySelector('input[name="filters"]:checked').value;
 
-  if (numberFilter.checked) {
-    filteredPokemons = allPokemons.filter((pokemon) => {
-      const pokemonID = pokemon.url.split("/")[6];
+  let filteredPokemons = allPokemons.filter((pokemon) => {
+    const pokemonID = pokemon.url.split("/")[6];
+    if (sortMode === 'number') {
       return pokemonID.startsWith(searchTerm);
-    });
-  } else if (nameFilter.checked) {
-    filteredPokemons = allPokemons.filter((pokemon) =>
-      pokemon.name.toLowerCase().startsWith(searchTerm)
-    );
-  } else {
-    filteredPokemons = allPokemons;
-  }
+    } else {
+      return pokemon.name.toLowerCase().startsWith(searchTerm);
+    }
+  });
 
   displayPokemons(filteredPokemons);
 
