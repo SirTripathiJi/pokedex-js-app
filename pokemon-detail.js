@@ -114,18 +114,7 @@ function setTypeBackgroundColor(pokemon) {
     color
   );
 
-  setElementStyles(
-    document.querySelectorAll(".stats-wrap p.stats"),
-    "color",
-    color
-  );
-
-  setElementStyles(
-    document.querySelectorAll(".stats-wrap .progress-bar"),
-    "color",
-    color
-  );
-
+  // Progress bar styling
   const rgbaColor = rgbaFromHex(color);
   const styleTag = document.createElement("style");
   styleTag.innerHTML = `
@@ -202,12 +191,12 @@ function displayPokemonDetails(pokemon) {
   statsWrapper.innerHTML = "";
 
   const statNameMapping = {
-    hp: "HP",
-    attack: "ATK",
-    defense: "DEF",
-    "special-attack": "SATK",
-    "special-defense": "SDEF",
-    speed: "SPD",
+    hp: "Hit Points",
+    attack: "Attack",
+    defense: "Defense",
+    "special-attack": "Special Attack",
+    "special-defense": "Special Defense",
+    speed: "Speed"
   };
 
   stats.forEach(({ stat, base_stat }) => {
