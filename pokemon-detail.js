@@ -1,235 +1,111 @@
-let currentPokemonId = null;
+const MAX = 151;
+let curId = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const MAX_POKEMONS = 151;
-  const pokemonID = new URLSearchParams(window.location.search).get("id");
-  const id = parseInt(pokemonID, 10);
-
-  if (id < 1 || id > MAX_POKEMONS) {
-    window.location.href = "./index.html";
-    return;
-  }
-
-  currentPokemonId = id;
-  loadPokemon(id);
-  setupNavigation();
-});
-
-async function loadPokemon(id) {
-  currentPokemonId = id;
-  try {
-    const [pokemon, pokemonSpecies] = await Promise.all([
-      fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) => res.json()),
-      fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then((res) => res.json())
-    ]);
-
-    if (currentPokemonId !== id) return;
-
-    displayPokemonDetails(pokemon);
-    const desc = document.querySelector(".pokemon-description");
-    if (desc) {
-      desc.textContent = getEnglishFlavorText(pokemonSpecies) || "No description available.";
-    }
-
-    window.history.pushState({}, "", `./detail.html?id=${id}`);
-  } catch (error) {
-    console.error("Error loading Pokemon:", error);
-  }
-}
-
-function setupNavigation() {
-  const prevBtn = document.getElementById("prev-btn");
-  const nextBtn = document.getElementById("next-btn");
-  const backBtn = document.getElementById("back-btn");
-
-  // Back button
-  if (backBtn) {
-    backBtn.onclick = () => window.location.href = "./index.html";
-  }
-
-  // Arrow navigation
-  if (prevBtn) {
-    prevBtn.onclick = () => {
-      if (currentPokemonId > 1) loadPokemon(currentPokemonId - 1);
-    };
-  }
-  if (nextBtn) {
-    nextBtn.onclick = () => {
-      if (currentPokemonId < 151) loadPokemon(currentPokemonId + 1);
-    };
-  }
-}
-
-const typeColors = {
-  normal: "#A8A878",
-  fire: "#F08030",
-  water: "#6890F0",
-  electric: "#F8D030",
-  grass: "#78C850",
-  ice: "#98D8D8",
-  fighting: "#C03028",
-  poison: "#A040A0",
-  ground: "#E0C068",
-  flying: "#A890F0",
-  psychic: "#F85888",
-  bug: "#A8B820",
-  rock: "#B8A038",
-  ghost: "#705898",
-  dragon: "#7038F8",
-  dark: "#705848",
-  steel: "#B8B8D0",
-  dark: "#EE99AC",
+const colors = {
+  normal: '#A8A878', fire: '#F08030', water: '#6890F0', electric: '#F8D030',
+  grass: '#78C850', ice: '#98D8D8', fighting: '#C03028', poison: '#A040A0',
+  ground: '#E0C068', flying: '#A890F0', psychic: '#F85888', bug: '#A8B820',
+  rock: '#B8A038', ghost: '#705898', dragon: '#7038F8', dark: '#705848',
+  steel: '#B8B8D0', fairy: '#EE99AC'
 };
 
-function setElementStyles(elements, cssProperty, value) {
-  elements.forEach((element) => {
-    element.style[cssProperty] = value;
-  });
-}
+const statsMap = {
+  hp: 'Hit Points', attack: 'Attack', defense: 'Defense',
+  'special-attack': 'Special Attack', 'special-defense': 'Special Defense', speed: 'Speed'
+};
 
-function rgbaFromHex(hexColor) {
-  return [
-    parseInt(hexColor.slice(1, 3), 16),
-    parseInt(hexColor.slice(3, 5), 16),
-    parseInt(hexColor.slice(5, 7), 16),
-  ].join(", ");
-}
-
-function setTypeBackgroundColor(pokemon) {
-  const mainType = pokemon.types[0].type.name;
-  const color = typeColors[mainType];
-
-  if (!color) {
-    console.warn(`Color not defined for type: ${mainType}`);
+document.addEventListener('DOMContentLoaded', () => {
+  const id = parseInt(new URLSearchParams(window.location.search).get('id'));
+  if (!id || id < 1 || id > MAX) {
+    window.location.href = 'index.html';
     return;
   }
+  curId = id;
+  load(id);
+});
 
-  const detailMainElement = document.querySelector(".detail-main");
-  setElementStyles([detailMainElement], "backgroundColor", color);
-  setElementStyles([detailMainElement], "borderColor", color);
+async function load(id) {
+  curId = id; // Set current ID before fetching
 
-  setElementStyles(
-    document.querySelectorAll(".power-wrapper > p"),
-    "backgroundColor",
-    color
-  );
+  try {
+    const [p, spec] = await Promise.all([
+      fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(r => r.json()),
+      fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then(r => r.json())
+    ]);
 
-  // Progress bar styling
-  const rgbaColor = rgbaFromHex(color);
-  const styleTag = document.createElement("style");
-  styleTag.innerHTML = `
-    .stats-wrap .progress-bar::-webkit-progress-bar {
-        background-color: rgba(${rgbaColor}, 0.5);
+    // Double-check we're still on this Pokemon
+    if (curId !== id) return;
+
+    show(p);
+    document.querySelector('.pokemon-description').textContent =
+      spec.flavor_text_entries.find(e => e.language.name === 'en')?.flavor_text.replace(/\f/g, ' ') || '';
+
+    setupNav(id);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function show(p) {
+  document.title = `${p.name} | Pokedex`;
+  document.querySelector('#pokemon-name').textContent = p.name.charAt(0).toUpperCase() + p.name.slice(1);
+  document.querySelector('#pokemon-id').textContent = `#${String(p.id).padStart(3, '0')}`;
+  document.querySelector('#pokemon-img').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${p.id}.svg`;
+
+  // Types
+  document.getElementById('pokemon-types').innerHTML = p.types
+    .map(t => `<span class="type-badge">${t.type.name}</span>`)
+    .join('');
+
+  // Info
+  document.querySelector('#pokemon-weight').textContent = `${(p.weight/10).toFixed(1)} kg`;
+  document.querySelector('#pokemon-height').textContent = `${(p.height/10).toFixed(1)} m`;
+
+  // Abilities
+  document.getElementById('pokemon-abilities').innerHTML = p.abilities
+    .map(a => `<span class="ability">${a.ability.name}</span>`)
+    .join('');
+
+  // Stats
+  document.getElementById('stats-list').innerHTML = p.stats
+    .map(s => `
+      <div class="stat-row">
+        <div class="stat-name">${statsMap[s.stat.name]||s.stat.name.toUpperCase()}</div>
+        <div class="stat-value">${String(s.base_stat).padStart(3,'0')}</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:${s.base_stat}%"></div></div>
+      </div>
+    `).join('');
+
+  // Theme color
+  const color = colors[p.types[0].type.name] || '#666';
+  document.querySelector('.detail-content').style.backgroundColor = color;
+  document.querySelectorAll('.type-badge').forEach(el => el.style.backgroundColor = color);
+}
+
+function setupNav(id) {
+  const prev = document.getElementById('prev-btn');
+  const next = document.getElementById('next-btn');
+  const back = document.getElementById('back-btn');
+
+  // Back button
+  back.onclick = () => window.location.href = 'index.html';
+
+  // Disable arrows at boundaries
+  prev.disabled = id === 1;
+  next.disabled = id === 151;
+
+  // Arrow navigation - update curId before loading
+  prev.onclick = () => {
+    if (id > 1) {
+      curId = id - 1;
+      load(curId);
     }
-    .stats-wrap .progress-bar::-webkit-progress-value {
-        background-color: ${color};
-    }
-  `;
-  document.head.appendChild(styleTag);
-}
-
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-}
-
-function createAndAppendElement(parent, tag, options = {}) {
-  const element = document.createElement(tag);
-  Object.keys(options).forEach((key) => {
-    element[key] = options[key];
-  });
-  parent.appendChild(element);
-  return element;
-}
-
-function displayPokemonDetails(pokemon) {
-  const { name, id, types, weight, height, abilities, stats } = pokemon;
-  const capitalizePokemonName = capitalizeFirstLetter(name);
-
-  document.querySelector("title").textContent = capitalizePokemonName;
-
-  const detailMainElement = document.querySelector(".detail-main");
-  detailMainElement.classList.add(name.toLowerCase());
-
-  document.querySelector(".name-wrap .name").textContent =
-    capitalizePokemonName;
-
-  document.querySelector(
-    ".pokemon-id-wrap .body2-fonts"
-  ).textContent = `#${String(id).padStart(3, "0")}`;
-
-  const imageElement = document.querySelector(".detail-img-wrapper img");
-  imageElement.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${id}.svg`;
-  imageElement.alt = name;
-
-  const typeWrapper = document.querySelector(".power-wrapper");
-  typeWrapper.innerHTML = "";
-  types.forEach(({ type }) => {
-    createAndAppendElement(typeWrapper, "p", {
-      className: `body3-fonts type ${type.name}`,
-      textContent: type.name,
-    });
-  });
-
-  document.querySelector(
-    ".pokemon-detail-wrap .pokemon-detail p.body3-fonts.weight"
-  ).textContent = `${weight / 10}kg`;
-  document.querySelector(
-    ".pokemon-detail-wrap .pokemon-detail p.body3-fonts.height"
-  ).textContent = `${height / 10}m`;
-
-  const abilitiesWrapper = document.querySelector(
-    ".pokemon-detail-wrap .pokemon-detail.move"
-  );
-  abilities.forEach(({ ability }) => {
-    createAndAppendElement(abilitiesWrapper, "p", {
-      className: "body3-fonts",
-      textContent: ability.name,
-    });
-  });
-
-  const statsWrapper = document.querySelector(".stats-wrapper");
-  statsWrapper.innerHTML = "";
-
-  const statNameMapping = {
-    hp: "Hit Points",
-    attack: "Attack",
-    defense: "Defense",
-    "special-attack": "Special Attack",
-    "special-defense": "Special Defense",
-    speed: "Speed"
   };
 
-  stats.forEach(({ stat, base_stat }) => {
-    const statDiv = document.createElement("div");
-    statDiv.className = "stats-wrap";
-    statsWrapper.appendChild(statDiv);
-
-    createAndAppendElement(statDiv, "p", {
-      className: "body3-fonts stats",
-      textContent: statNameMapping[stat.name],
-    });
-
-    createAndAppendElement(statDiv, "p", {
-      className: "body3-fonts",
-      textContent: String(base_stat).padStart(3, "0"),
-    });
-
-    createAndAppendElement(statDiv, "progress", {
-      className: "progress-bar",
-      value: base_stat,
-      max: 100,
-    });
-  });
-
-  setTypeBackgroundColor(pokemon);
-}
-
-function getEnglishFlavorText(pokemonSpecies) {
-  for (let entry of pokemonSpecies.flavor_text_entries) {
-    if (entry.language.name === "en") {
-      let flavor = entry.flavor_text.replace(/\f/g, " ");
-      return flavor;
+  next.onclick = () => {
+    if (id < 151) {
+      curId = id + 1;
+      load(curId);
     }
-  }
-  return "";
+  };
 }
