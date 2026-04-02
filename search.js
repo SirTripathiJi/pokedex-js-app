@@ -1,37 +1,25 @@
-const inputElement = document.querySelector("#search-input");
-const search_icon = document.querySelector("#search-close-icon");
-const sort_wrapper = document.querySelector(".sort-wrapper");
+const input = document.getElementById('search-input');
+const clear = document.getElementById('search-clear');
+const sortBtn = document.getElementById('sort-btn');
+const sortOptions = document.querySelector('.sort-options');
 
-inputElement.addEventListener("input", () => {
-  handleInputChange(inputElement);
+// Clear button
+input.addEventListener('input', () => {
+  clear.classList.toggle('hidden', !input.value);
 });
-search_icon.addEventListener("click", handleSearchCloseOnClick);
-sort_wrapper.addEventListener("click", handleSortIconOnClick);
 
-function handleInputChange(inputElement) {
-  const inputValue = inputElement.value;
+clear.addEventListener('click', () => {
+  input.value = '';
+  clear.classList.add('hidden');
+  input.focus();
+});
 
-  if (inputValue !== "") {
-    document
-      .querySelector("#search-close-icon")
-      .classList.add("search-close-icon-visible");
-  } else {
-    document
-      .querySelector("#search-close-icon")
-      .classList.remove("search-close-icon-visible");
-  }
-}
+// Sort dropdown
+sortBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  sortOptions.classList.toggle('hidden');
+});
 
-function handleSearchCloseOnClick() {
-  document.querySelector("#search-input").value = "";
-  document
-    .querySelector("#search-close-icon")
-    .classList.remove("search-close-icon-visible");
-}
-
-function handleSortIconOnClick() {
-  document
-    .querySelector(".filter-wrapper")
-    .classList.toggle("filter-wrapper-open");
-  document.querySelector("body").classList.toggle("filter-wrapper-overlay");
-}
+document.addEventListener('click', () => {
+  sortOptions.classList.add('hidden');
+});
