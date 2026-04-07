@@ -3,23 +3,21 @@ const clear = document.getElementById('search-clear');
 const sortBtn = document.getElementById('sort-btn');
 const sortOptions = document.querySelector('.sort-options');
 
-// Clear button
-input.addEventListener('input', () => {
+input.addEventListener('input', function () {
   clear.classList.toggle('hidden', !input.value);
 });
 
-clear.addEventListener('click', () => {
+clear.addEventListener('click', function () {
   input.value = '';
   clear.classList.add('hidden');
-  input.focus();
+  input.dispatchEvent(new Event('keyup'));
 });
 
-// Sort dropdown
-sortBtn.addEventListener('click', e => {
+sortBtn.addEventListener('click', function (e) {
   e.stopPropagation();
   sortOptions.classList.toggle('hidden');
 });
 
-document.addEventListener('click', () => {
+document.addEventListener('click', function () {
   sortOptions.classList.add('hidden');
 });
