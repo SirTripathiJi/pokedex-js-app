@@ -2,84 +2,137 @@ const MAX = 151;
 let curId = null;
 
 const colors = {
-  normal: '#A8A878', fire: '#F08030', water: '#6890F0', electric: '#F8D030',
-  grass: '#78C850', ice: '#98D8D8', fighting: '#C03028', poison: '#A040A0',
-  ground: '#E0C068', flying: '#A890F0', psychic: '#F85888', bug: '#A8B820',
-  rock: '#B8A038', ghost: '#705898', dragon: '#7038F8', dark: '#705848',
-  steel: '#B8B8D0', fairy: '#EE99AC'
+  normal: '#A8A878',
+  fire: '#F08030',
+  water: '#6890F0',
+  electric: '#F8D030',
+  grass: '#78C850',
+  ice: '#98D8D8',
+  fighting: '#C03028',
+  poison: '#A040A0',
+  ground: '#E0C068',
+  flying: '#A890F0',
+  psychic: '#F85888',
+  bug: '#A8B820',
+  rock: '#B8A038',
+  ghost: '#705898',
+  dragon: '#7038F8',
+  dark: '#705848',
+  steel: '#B8B8D0',
+  fairy: '#EE99AC'
 };
 
 const statsMap = {
-  hp: 'Hit Points', attack: 'Attack', defense: 'Defense',
-  'special-attack': 'Special Attack', 'special-defense': 'Special Defense', speed: 'Speed'
+  hp: 'Hit Points',
+  attack: 'Attack',
+  defense: 'Defense',
+  'special-attack': 'Special Attack',
+  'special-defense': 'Special Defense',
+  speed: 'Speed'
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  const id = parseInt(new URLSearchParams(window.location.search).get('id'));
+document.addEventListener('DOMContentLoaded', function () {
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'));
+
   if (!id || id < 1 || id > MAX) {
     window.location.href = 'index.html';
     return;
   }
+
   curId = id;
   load(id);
 });
 
 async function load(id) {
-  curId = id; // Set current ID before fetching
+  curId = id;
 
   try {
-    const [p, spec] = await Promise.all([
-      fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(r => r.json()),
-      fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then(r => r.json())
-    ]);
+    const res1 = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
+    const p = await res1.json();
 
-    // Double-check we're still on this Pokemon
+    const res2 = await fetch('https://pokeapi.co/api/v2/pokemon-species/' + id);
+    const spec = await res2.json();
+
     if (curId !== id) return;
 
     show(p);
-    document.querySelector('.pokemon-description').textContent =
-      spec.flavor_text_entries.find(e => e.language.name === 'en')?.flavor_text.replace(/\f/g, ' ') || '';
+
+    const entry = spec.flavor_text_entries.find(function (e) {
+      return e.language.name === 'en';
+    });
+
+    if (entry) {
+      document.querySelector('.pokemon-description').textContent =
+        entry.flavor_text.replace(/\f/g, ' ');
+    } else {
+      document.querySelector('.pokemon-description').textContent = '';
+    }
 
     setupNav(id);
+
   } catch (e) {
     console.error(e);
   }
 }
 
 function show(p) {
-  document.title = `${p.name} | Pokedex`;
-  document.querySelector('#pokemon-name').textContent = p.name.charAt(0).toUpperCase() + p.name.slice(1);
-  document.querySelector('#pokemon-id').textContent = `#${String(p.id).padStart(3, '0')}`;
-  document.querySelector('#pokemon-img').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${p.id}.svg`;
+  document.title = p.name + ' | Pokedex';
 
-  // Types
-  document.getElementById('pokemon-types').innerHTML = p.types
-    .map(t => `<span class="type-badge">${t.type.name}</span>`)
-    .join('');
+  const name = p.name.charAt(0).toUpperCase() + p.name.slice(1);
+  document.querySelector('#pokemon-name').textContent = name;
 
-  // Info
-  document.querySelector('#pokemon-weight').textContent = `${(p.weight/10).toFixed(1)} kg`;
-  document.querySelector('#pokemon-height').textContent = `${(p.height/10).toFixed(1)} m`;
+  const idText = '#' + String(p.id).padStart(3, '0');
+  document.querySelector('#pokemon-id').textContent = idText;
 
-  // Abilities
-  document.getElementById('pokemon-abilities').innerHTML = p.abilities
-    .map(a => `<span class="ability">${a.ability.name}</span>`)
-    .join('');
+  const img =
+    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/' +
+    p.id +
+    '.svg';
+  document.querySelector('#pokemon-img').src = img;
 
-  // Stats
-  document.getElementById('stats-list').innerHTML = p.stats
-    .map(s => `
-      <div class="stat-row">
-        <div class="stat-name">${statsMap[s.stat.name]||s.stat.name.toUpperCase()}</div>
-        <div class="stat-value">${String(s.base_stat).padStart(3,'0')}</div>
-        <div class="stat-bar"><div class="stat-fill" style="width:${s.base_stat}%"></div></div>
-      </div>
-    `).join('');
+  const typesHTML = p.types.map(function (t) {
+    return '<span class="type-badge">' + t.type.name + '</span>';
+  }).join('');
+  document.getElementById('pokemon-types').innerHTML = typesHTML;
 
-  // Theme color
-  const color = colors[p.types[0].type.name] || '#666';
+  const weight = (p.weight / 10).toFixed(1) + ' kg';
+  document.querySelector('#pokemon-weight').textContent = weight;
+
+  const height = (p.height / 10).toFixed(1) + ' m';
+  document.querySelector('#pokemon-height').textContent = height;
+
+  const abilitiesHTML = p.abilities.map(function (a) {
+    return '<span class="ability">' + a.ability.name + '</span>';
+  }).join('');
+  document.getElementById('pokemon-abilities').innerHTML = abilitiesHTML;
+
+  const statsHTML = p.stats.map(function (s) {
+    const name = statsMap[s.stat.name] || s.stat.name.toUpperCase();
+    const value = String(s.base_stat).padStart(3, '0');
+
+    return (
+      '<div class="stat-row">' +
+        '<div class="stat-name">' + name + '</div>' +
+        '<div class="stat-value">' + value + '</div>' +
+        '<div class="stat-bar">' +
+          '<div class="stat-fill" style="width:' + s.base_stat + '%"></div>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  document.getElementById('stats-list').innerHTML = statsHTML;
+
+  const type = p.types[0].type.name;
+  const color = colors[type] || '#666';
+
   document.querySelector('.detail-content').style.backgroundColor = color;
-  document.querySelectorAll('.type-badge').forEach(el => el.style.backgroundColor = color);
+
+  const badges = document.querySelectorAll('.type-badge');
+  badges.forEach(function (el) {
+    el.style.backgroundColor = color;
+  });
 }
 
 function setupNav(id) {
@@ -87,25 +140,22 @@ function setupNav(id) {
   const next = document.getElementById('next-btn');
   const back = document.getElementById('back-btn');
 
-  // Back button
-  back.onclick = () => window.location.href = 'index.html';
+  back.onclick = function () {
+    window.location.href = 'index.html';
+  };
 
-  // Disable arrows at boundaries
   prev.disabled = id === 1;
-  next.disabled = id === 151;
+  next.disabled = id === MAX;
 
-  // Arrow navigation - update curId before loading
-  prev.onclick = () => {
+  prev.onclick = function () {
     if (id > 1) {
-      curId = id - 1;
-      load(curId);
+      load(id - 1);
     }
   };
 
-  next.onclick = () => {
-    if (id < 151) {
-      curId = id + 1;
-      load(curId);
+  next.onclick = function () {
+    if (id < MAX) {
+      load(id + 1);
     }
   };
 }
