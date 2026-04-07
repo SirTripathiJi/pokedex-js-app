@@ -106,6 +106,7 @@ body {
   top: 50px;
   right: 0;
   background: var(--card-bg);
+  color: var(--text);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 10px;
