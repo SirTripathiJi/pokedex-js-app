@@ -59,7 +59,6 @@ html/
 js/
 ├── pokemon-detail.js
 ├── pokemon.js
-└── search.js
 
 LICENSE
 README.md
