@@ -37,23 +37,33 @@ This web application allows users to:
 ## 📦 Project Structure
 
 ```
-pokedex-tutorial-main/
-├── index.html          # Main list page
-├── detail.html         # Pokémon detail page
-├── style.css           # All styling (responsive + dark mode)
-├── pokemon.js          # Main list logic (fetch, display, search, sort, favorites)
-├── pokemon-detail.js   # Detail page logic (stats, navigation, theme)
-├── search.js           # Search UI interactions (clear button, dropdown)
-├── assets/
-│   ├── pokeball.svg
-│   ├── search.svg
-│   ├── cross.svg
-│   ├── sorting.svg
-│   ├── back-to-home.svg
-│   ├── chevron_left.svg
-│   ├── chevron_right.svg
-│   └── pokedex.svg
-└── README.md           # This file
+assets/
+├── back-to-home.svg
+├── chevron_left.svg
+├── chevron_right.svg
+├── cross.svg
+├── height.svg
+├── pokeball.svg
+├── pokedex.svg
+├── search.svg
+├── sorting.svg
+└── weight.svg
+
+css/
+└── style.css
+
+html/
+├── detail.html
+└── index.html
+
+js/
+├── pokemon-detail.js
+├── pokemon.js
+└── search.js
+
+LICENSE
+README.md
+
 ```
 
 ## 🚀 Getting Started
@@ -211,4 +221,3 @@ This project demonstrates understanding of:
 - **Pokémon** - © Nintendo/Creatures Inc./GAME FREAK inc.
 
 
-=
