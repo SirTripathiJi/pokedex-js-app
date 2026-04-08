@@ -14,7 +14,7 @@ This web application allows users to:
 
 ## 🎯 Features Implemented
 
-### Core Features (Milestone 3)
+### Core Features 
 ✅ **Search** - Search Pokémon by name or number
 ✅ **Filtering** - Filter by favorites only
 ✅ **Sorting** - Sort alphabetically (A-Z) or by Pokédex number
