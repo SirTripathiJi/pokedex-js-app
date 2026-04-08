@@ -23,7 +23,6 @@ This web application allows users to:
 
 ### Bonus Features
 ✅ **Debouncing** - Search input debounced (300ms) to optimize performance
-✅ **Loading Indicators** - Spinner shown while fetching data
 ✅ **Local Storage** - Favorites and theme preference persist across sessions
 ✅ **Responsive Design** - Works on mobile, tablet, and desktop
 
@@ -87,9 +86,6 @@ README.md
    ```
 
 3. **That's it!** The app will load and automatically fetch the first 151 Pokémon.
-
-### No Build Step Required
-This project uses vanilla JavaScript and CSS - no installation, compilation, or build tools needed. Just open the HTML file in a browser.
 
 ## 🎮 How to Use
 
@@ -214,9 +210,16 @@ This project demonstrates understanding of:
 - Async/await and Promise handling
 - Modern ES6+ JavaScript features
 
+## 🚀 Deployment
+
+This project is also deployed using Netlify:
+https://soft-strudel-f693f4.netlify.app/index.html
+
 ## 🙏 Credits
 
 - **PokéAPI** - Pokémon data (https://pokeapi.co)
 - **Pokémon** - © Nintendo/Creatures Inc./GAME FREAK inc.
+
+
 
 
